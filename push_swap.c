@@ -6,7 +6,7 @@
 /*   By: mphilip <mphilip@student.42lyon.fr >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/27 15:35:43 by mphilip           #+#    #+#             */
-/*   Updated: 2023/03/15 12:51:59 by mphilip          ###   ########.fr       */
+/*   Updated: 2023/03/15 13:40:14 by mphilip          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,12 +84,10 @@ void	del(void *ptr)
 	(void)ptr;
 }
 
-int		split_stack(t_list **stack_from, t_list **stack_to, char name)
+int		split_stack(t_list **stack_from, t_list **stack_to, char name, int mod)
 {
 	int	len;
 	int	pivot;
-	static int	a_count=0;
-	static int	b_count=0;
 
 	len = 0;
 	pivot = *(int*)(ft_lstlast(*stack_from)->content);
@@ -107,7 +105,7 @@ int		split_stack(t_list **stack_from, t_list **stack_to, char name)
 	{
 		ft_reverse_rotate(stack_from, name);
 		ft_swap(*stack_from, name);
-		while (mod < ft_lstsize(*stack_from) - 2)
+		while (mod < ft_lstsize(*stack_from) - 1)
 		{
 			ft_reverse_rotate(stack_from, name);
 			mod++;
@@ -135,11 +133,11 @@ void	sort_stack(t_list **stack, char name)
 	{
 		ft_printf("\n\nTEST B\n\n");
 		if (name == 'a')
-			sort_stack(&tempo, ++name);
+			sort_stack(&tempo, name+1);
 		else
 		{
 			count_b++;
-			sort_stack(&tempo, --name);
+			sort_stack(&tempo, name-1);
 		}
 	}
 	else if (size > 2)
@@ -150,7 +148,7 @@ void	sort_stack(t_list **stack, char name)
 	if (len_stack == 2)
 	{
 		ft_printf("\n\nTEST DfEF\n\n");
-		if (*(int*)(tempo->content) > *(int*)(tempo->next->content))
+		if (*(int*)(tempo->content) < *(int*)(tempo->next->content))
 			ft_swap(tempo, name);
 	}
 	else if (size == 2)
@@ -163,7 +161,13 @@ void	sort_stack(t_list **stack, char name)
 	while (len_stack > 0)
 	{
 		ft_printf("\n\nTEST E\n\n");
-		ft_push(&tempo, stack, name);
+		if (name == 'a')
+			ft_push(&tempo, stack, name+1);
+		else
+		{
+			count_b++;
+			ft_push(&tempo, stack, name-1);
+		}
 		len_stack--;
 	}
 }

@@ -1,4 +1,4 @@
-SRCS = push_swap.c push_swap_utils.c rules_1.c
+SRCS = push_swap.c push_swap_utils.c push_swap_sorts.c push_swap_checks.c rules.c
 
 NAME = push_swap
 

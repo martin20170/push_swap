@@ -1,18 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   rules_1.c                                          :+:      :+:    :+:   */
+/*   rules.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mphilip <mphilip@student.42lyon.fr >       +#+  +:+       +#+        */
+/*   By: mphilip <mphilip@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/28 14:40:04 by mphilip           #+#    #+#             */
-/*   Updated: 2023/03/09 17:29:46 by mphilip          ###   ########.fr       */
+/*   Updated: 2023/04/10 21:07:50 by mphilip          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "push_swap.h"
 
-void	ft_swap(t_list *stack, char name)
+void	swap(t_list *stack, char name)
 {
 	void	*memo;
 
@@ -26,14 +26,7 @@ void	ft_swap(t_list *stack, char name)
 	}
 }
 
-void	ft_ss(t_list *stack_a, t_list *stack_b)
-{
-	ft_swap(stack_a, 0);
-	ft_swap(stack_b, 0);
-	ft_printf("ss\n");
-}
-
-void	ft_push(t_list **stack_from, t_list **stack_to, char name)
+void	push(t_list **stack_from, t_list **stack_to, char name)
 {
 	t_list	*memo;
 
@@ -46,11 +39,14 @@ void	ft_push(t_list **stack_from, t_list **stack_to, char name)
 			ft_lstadd_front(stack_to, ft_lstnew((*stack_from)->content));
 		free(*stack_from);
 		*stack_from = memo;
-		ft_printf("p%c\n", name);
+		if (name == 'a')
+			ft_printf("p%c\n", name + 1);
+		else
+			ft_printf("p%c\n", name - 1);
 	}
 }
 
-void	ft_rotate(t_list **stack, char name)
+void	rotate(t_list **stack, char name)
 {
 	t_list	*memo;
 
@@ -65,14 +61,7 @@ void	ft_rotate(t_list **stack, char name)
 	}
 }
 
-void	ft_rr(t_list **stack_a, t_list **stack_b)
-{
-	ft_rotate(stack_a, 0);
-	ft_rotate(stack_b, 0);
-	ft_printf("rr\n");
-}
-
-void	ft_reverse_rotate(t_list **stack, char name)
+void	reverse_rotate(t_list **stack, char name)
 {
 	t_list	*last;
 	t_list	*bef_last;
@@ -94,11 +83,4 @@ void	ft_reverse_rotate(t_list **stack, char name)
 		if (name)
 			ft_printf("rr%c\n", name);
 	}
-}
-
-void	ft_rrr(t_list **stack_a, t_list **stack_b)
-{
-	ft_reverse_rotate(stack_a, 0);
-	ft_reverse_rotate(stack_b, 0);
-	ft_printf("rrr\n");
 }

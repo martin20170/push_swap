@@ -3,211 +3,96 @@
 /*                                                        :::      ::::::::   */
 /*   push_swap.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mphilip <mphilip@student.42lyon.fr >       +#+  +:+       +#+        */
+/*   By: mphilip <mphilip@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/27 15:35:43 by mphilip           #+#    #+#             */
-/*   Updated: 2023/03/15 13:40:14 by mphilip          ###   ########.fr       */
+/*   Updated: 2023/04/11 13:52:13 by mphilip          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "push_swap.h"
-
-int	nb_larger(int *tab, int id, int size)
-{
-	int	i;
-	int	result;
-
-	i = 0;
-	result = 0;
-	while (i < size)
-	{
-		if (tab[i] > tab[id])
-			result++;
-		i++;
-	}
-	return (result);
-}
-
-int	*index_tab(int size, char **input)
-{
-	int	i;
-	int	*tab;
-	int	*result;
-
-	i = 0;
-	tab = malloc(sizeof(int) * size);
-	result = malloc(sizeof(int) * size);
-	if (!tab || !result)
-		return (NULL);
-	while (i < size)
-	{
-		tab[i] = ft_atoi(input[i]);
-		i++;
-	}
-	i = 0;
-	while (i < size)
-	{
-		result[i] = size - nb_larger(tab, i, size);
-		i++;
-	}
-	free(tab);
-	return (result);
-}
-
-void	fill_stack(t_list **stack, int *index_tab, int size)
-{
-	int	i;
-
-	i = 0;
-	while (i < size)
-	{
-		ft_lstadd_back(stack, ft_lstnew(&index_tab[i]));
-		i++;
-	}
-}
-
-int	*content_of_id(t_list *stack, int id)
-{
-	int	i;
-
-	i = 0;
-	while (i < id)
-	{
-		stack = stack->next;
-		i++;
-	}
-	return (stack->content);
-}
 
 void	del(void *ptr)
 {
 	(void)ptr;
 }
 
-int		split_stack(t_list **stack_from, t_list **stack_to, char name, int mod)
+int	tablen(char **tab)
 {
+	int	i;
 	int	len;
-	int	pivot;
 
+	i = 0;
 	len = 0;
-	pivot = *(int*)(ft_lstlast(*stack_from)->content);
-	while (*(int*)((*stack_from)->content) != pivot)
+	while (tab[i])
 	{
-		if (*(int*)((*stack_from)->content) < pivot)
-		{
-			ft_push(stack_from, stack_to, name);
-			len++;
-		}
-		else
-			ft_rotate(stack_from, name);
-	}
-	if (mod == 1)
-	{
-		ft_reverse_rotate(stack_from, name);
-		ft_swap(*stack_from, name);
-		while (mod < ft_lstsize(*stack_from) - 1)
-		{
-			ft_reverse_rotate(stack_from, name);
-			mod++;
-		}
+		len++;
+		i++;
 	}
 	return (len);
 }
 
-void	sort_stack(t_list **stack, char name)
+void	free_split(char **tab)
 {
-	int			size;
-	int			len_stack;
-	static int 	count_b = 0;
-	t_list		*tempo = NULL;
+	int	len;
+	int	i;
 
-	if (count_b > 0)
-		len_stack = split_stack(stack, &tempo, name, 1);
-	else
-		len_stack = split_stack(stack, &tempo, name, 0);
-	size = ft_lstsize(*stack);
+	len = tablen(tab);
+	i = 0;
+	while (i < len)
+	{
+		free(tab[i]);
+		i++;
+	}
+	free(tab);
+}
 
-	ft_printf("\n\nTEST A\n\n");
+int	string_stack(char **argv, t_list **stack_a, t_list **stack_b)
+{
+	char	**spl;
+	int		*tab;
 
-	if (len_stack > 2)
+	spl = ft_split(argv[1], ' ');
+	if (!spl)
+		return (0);
+	if (error_check(spl, tablen(spl), 0, spl) == 0)
 	{
-		ft_printf("\n\nTEST B\n\n");
-		if (name == 'a')
-			sort_stack(&tempo, name+1);
-		else
-		{
-			count_b++;
-			sort_stack(&tempo, name-1);
-		}
+		tab = index_tab(tablen(spl), spl);
+		fill_stack(stack_a, tab, tablen(spl));
+		sort_short(stack_a, stack_b, tablen(spl));
+		if (is_sorted(*stack_a) == 0)
+			radix_sort(stack_a, stack_b);
+		ft_lstclear(stack_a, &del);
+		ft_lstclear(stack_b, &del);
+		free(tab);
+		free_split(spl);
 	}
-	else if (size > 2)
-	{
-		ft_printf("\n\nTEST C\n\n");
-		sort_stack(stack, name);
-	}
-	if (len_stack == 2)
-	{
-		ft_printf("\n\nTEST DfEF\n\n");
-		if (*(int*)(tempo->content) < *(int*)(tempo->next->content))
-			ft_swap(tempo, name);
-	}
-	else if (size == 2)
-	{
-		ft_printf("\n\nTEST D\n\n");
-		if (*(int*)((*stack)->content) > *(int*)((*stack)->next->content))
-			ft_swap(*stack, name);
-	}
-
-	while (len_stack > 0)
-	{
-		ft_printf("\n\nTEST E\n\n");
-		if (name == 'a')
-			ft_push(&tempo, stack, name+1);
-		else
-		{
-			count_b++;
-			ft_push(&tempo, stack, name-1);
-		}
-		len_stack--;
-	}
+	return (1);
 }
 
 int	main(int argc, char **argv)
 {
 	int		*tab;
-	t_list	*stack_a = NULL;
-	t_list	*stack_b = NULL;
+	t_list	*stack_a;
+	t_list	*stack_b;
 
-	tab = index_tab(argc - 1, argv + 1);
-	fill_stack(&stack_a, tab, argc - 1);
-
-	split_stack(&stack_a, &stack_b, 'a', 0);
-
-	sort_stack(&stack_b, 'b');
-
-	ft_printf("\n\n\n");
-		for (int i = 0; i < argc - 1; i++)
-			ft_printf("tab %d : %d\n", i, tab[i]);
-		ft_printf("\n\n\n");
-
-			printf("\n\n\n");
-		for (int i = 0; i < ft_lstsize(stack_a); i++)
-			ft_printf("satck_a %d : %d\n", i, *content_of_id(stack_a, i));
-		printf("\n\n\n");
-
-		printf("\n\n\n");
-		for (int i = 0; i < ft_lstsize(stack_b); i++)
-			ft_printf("satck_b %d : %d\n", i, *content_of_id(stack_b, i));
-		printf("\n\n\n");
-
-
-
-	ft_lstclear(&stack_a, &del);
-	ft_lstclear(&stack_b, &del);
-	free (tab);
-
+	stack_a = NULL;
+	stack_b = NULL;
+	if (argc == 2)
+	{
+		if (string_stack(argv, &stack_a, &stack_b) == 0)
+			return (0);
+	}
+	else if (argc > 2 && error_check(argv, argc, 1, NULL) == 0)
+	{
+		tab = index_tab(argc - 1, argv + 1);
+		fill_stack(&stack_a, tab, argc - 1);
+		sort_short(&stack_a, &stack_b, argc - 1);
+		if (is_sorted(stack_a) == 0)
+			radix_sort(&stack_a, &stack_b);
+		ft_lstclear(&stack_a, &del);
+		ft_lstclear(&stack_b, &del);
+		free(tab);
+	}
 	return (0);
 }
-
-
-
